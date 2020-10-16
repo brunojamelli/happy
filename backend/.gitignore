@@ -1,4 +1,3 @@
 node_modules
 database.sqlite
-/src/database/migrations
 packge-lock.json

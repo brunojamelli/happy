@@ -35,5 +35,12 @@ export default {
         let orphRep = getRepository(Orphanage);
         let list = await orphRep.find();
         return res.json(list);
+    },
+
+    async show(req: Request, res: Response){
+        let orphRep = getRepository(Orphanage);
+        let orph = await orphRep.findOneOrFail(req.params.id);
+        return res.json(orph);
     }
+
 }

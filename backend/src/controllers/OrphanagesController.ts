@@ -1,4 +1,4 @@
-import {Request, Response} from 'express';
+import { Request, Response } from 'express';
 import Orphanage from '../models/Orphanage';
 import { getRepository } from 'typeorm';
 
@@ -16,6 +16,11 @@ export default {
 
         const orphRep = getRepository(Orphanage);
 
+        const reqImgs = req.files as Express.Multer.File[];
+        const images = reqImgs.map(image => {
+            return { path: image.filename }
+        })
+
         const orph = orphRep.create({
             name,
             latitude,
@@ -23,7 +28,8 @@ export default {
             about,
             instructions,
             opening_hours,
-            open_on_weekends
+            open_on_weekends,
+            images
         });
 
         await orphRep.save(orph);
@@ -31,13 +37,13 @@ export default {
         return res.status(201).json(orph);
     },
 
-    async index(req: Request, res: Response){
+    async index(req: Request, res: Response) {
         let orphRep = getRepository(Orphanage);
         let list = await orphRep.find();
         return res.json(list);
     },
 
-    async show(req: Request, res: Response){
+    async show(req: Request, res: Response) {
         let orphRep = getRepository(Orphanage);
         let orph = await orphRep.findOneOrFail(req.params.id);
         return res.json(orph);

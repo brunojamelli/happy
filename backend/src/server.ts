@@ -10,6 +10,7 @@ app.use(express.json());
 app.listen(3333);
 
 app.post("/orphanages",async (req, res) => {
+
     const {
         name,
         latitude,
@@ -17,16 +18,22 @@ app.post("/orphanages",async (req, res) => {
         about,
         instructions,
         opening_hours,
-        open_on_wekends,
-    } = req.body();
+        open_on_weekends,
+    } = req.body;
 
     const orphRep = getRepository(Orphanage);
 
     const orph = orphRep.create({
-        ...req.body
+        name,
+        latitude,
+        longitude,
+        about,
+        instructions,
+        opening_hours,
+        open_on_weekends
     });
 
     await orphRep.save(orph);
 
-    return res.status(201).json(orph);
+    return res.json(orph);
 })

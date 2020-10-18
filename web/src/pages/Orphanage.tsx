@@ -1,13 +1,29 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FaWhatsapp } from "react-icons/fa";
 import { FiClock, FiInfo } from "react-icons/fi";
 import { Map, Marker, TileLayer } from "react-leaflet";
 import L from 'leaflet';
 
 import mapMarkerImg from '../images/map-marker.svg';
-
+import { useParams } from 'react-router-dom'
 import '../styles/pages/orphanage.css';
 import Sidebar from "../components/Sidebar";
+import api from '../service/api';
+
+interface Orphanage {
+  latitude: number,
+  longitude: number,
+  name: string,
+  description: string,
+  instructions: string,
+  opening_hours: string,
+  open_on_weekends: string,
+  images: Array<{ url: string }>
+}
+
+interface OrphanageParams {
+  id: string,
+}
 
 const happyMapIcon = L.icon({
   iconUrl: mapMarkerImg,
@@ -18,13 +34,25 @@ const happyMapIcon = L.icon({
 })
 
 export default function Orphanage() {
+  const params = useParams<OrphanageParams>();
+  const [orphanage, setOrphanage] = useState<Orphanage>();
+  console.log(orphanage);
+  useEffect(() => {
+    api.get(`orphanages/${params.id}`).then(response => {
+      setOrphanage(response.data);
+    })
+  }, [params.id]);
+
+  if (!orphanage) {
+    return <p>Carregando..</p>
+  }
   return (
     <div id="page-orphanage">
       <Sidebar />
 
       <main>
         <div className="orphanage-details">
-          <img src="https://www.gcd.com.br/wp-content/uploads/2020/08/safe_image.jpg" alt="Lar das meninas" />
+          <img src={orphanage.images[0].url} alt={orphanage.name} />
 
           <div className="images">
             <button className="active" type="button">

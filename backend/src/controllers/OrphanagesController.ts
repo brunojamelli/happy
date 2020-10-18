@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import Orphanage from '../models/Orphanage';
 import { getRepository } from 'typeorm';
+import orphView from '../views/orphanages_view';
 
 export default {
     async create(req: Request, res: Response) {
@@ -39,10 +40,10 @@ export default {
 
     async index(req: Request, res: Response) {
         let orphRep = getRepository(Orphanage);
-        let list = await orphRep.find({
+        let orphList = await orphRep.find({
             relations: ['images']
         });
-        return res.json(list);
+        return res.json(orphView.renderMany(orphList));
     },
 
     async show(req: Request, res: Response) {
@@ -50,7 +51,7 @@ export default {
         let orph = await orphRep.findOneOrFail(req.params.id,{
             relations:['images']
         });
-        return res.json(orph);
+        return res.json(orphView.render(orph));
     }
 
 }

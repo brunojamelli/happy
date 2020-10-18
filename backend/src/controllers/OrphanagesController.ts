@@ -39,13 +39,17 @@ export default {
 
     async index(req: Request, res: Response) {
         let orphRep = getRepository(Orphanage);
-        let list = await orphRep.find();
+        let list = await orphRep.find({
+            relations: ['images']
+        });
         return res.json(list);
     },
 
     async show(req: Request, res: Response) {
         let orphRep = getRepository(Orphanage);
-        let orph = await orphRep.findOneOrFail(req.params.id);
+        let orph = await orphRep.findOneOrFail(req.params.id,{
+            relations:['images']
+        });
         return res.json(orph);
     }
 

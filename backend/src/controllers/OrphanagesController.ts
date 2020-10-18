@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import Orphanage from '../models/Orphanage';
 import { getRepository } from 'typeorm';
 import orphView from '../views/orphanages_view';
+import * as Yup from 'yup';
 
 export default {
     async create(req: Request, res: Response) {
@@ -21,8 +22,7 @@ export default {
         const images = reqImgs.map(image => {
             return { path: image.filename }
         })
-
-        const orph = orphRep.create({
+        const data = {
             name,
             latitude,
             longitude,
@@ -31,7 +31,26 @@ export default {
             opening_hours,
             open_on_weekends,
             images
-        });
+        }
+        const data_schema = Yup.object().shape({
+            name: Yup.string().required(),
+            latitude: Yup.number().required(),
+            longitude: Yup.number().required(),
+            about: Yup.string().required().max(300),
+            instructions: Yup.string().required(),
+            opening_hours: Yup.string().required(),
+            open_on_weekends: Yup.boolean().required(),
+            images: Yup.array(
+                Yup.object().shape({
+                    path: Yup.string().required(),
+                })
+            ),
+        })
+        await data_schema.validate(data,
+            // { ...req.body, open_on_weekends, images },
+            { abortEarly: false }
+          );
+        const orph = orphRep.create(data);
 
         await orphRep.save(orph);
 
@@ -48,8 +67,8 @@ export default {
 
     async show(req: Request, res: Response) {
         let orphRep = getRepository(Orphanage);
-        let orph = await orphRep.findOneOrFail(req.params.id,{
-            relations:['images']
+        let orph = await orphRep.findOneOrFail(req.params.id, {
+            relations: ['images']
         });
         return res.json(orphView.render(orph));
     }

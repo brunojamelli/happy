@@ -36,6 +36,9 @@ const happyMapIcon = L.icon({
 export default function Orphanage() {
   const params = useParams<OrphanageParams>();
   const [orphanage, setOrphanage] = useState<Orphanage>();
+  const [actImgIndex, setActImgIndex] = useState(0);
+
+
   console.log(orphanage);
   useEffect(() => {
     api.get(`orphanages/${params.id}`).then(response => {
@@ -52,12 +55,14 @@ export default function Orphanage() {
 
       <main>
         <div className="orphanage-details">
-          <img src={orphanage.images[0].url} alt={orphanage.name} />
+          <img src={orphanage.images[actImgIndex].url} alt={orphanage.name} />
 
           <div className="images">
-            {orphanage.images.map(image => {
+            {orphanage.images.map((image,index) => {
               return (
-                <button key={image.id} className="active" type="button">
+                <button onClick={()=>{
+                  setActImgIndex(index)
+                }} key={image.id} className={actImgIndex === index ? 'active': ''} type="button">
                   <img src={image.url} alt={orphanage.name} />
                 </button>
               );

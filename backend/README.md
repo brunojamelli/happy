@@ -1,4 +1,13 @@
-### starting the database for first time
-```{r, engine='bash', count_lines}
+## Project setup
+```
+npm install
+```
+
+## Run the migration
+```
 npm run typeorm migration:run
+```
+## Compiles for run the serve
+```
+npm start
 ```
